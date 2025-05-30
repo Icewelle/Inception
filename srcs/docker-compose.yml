@@ -1,0 +1,7 @@
+name : ${VAR:?error}
+
+services:
+
+ nginx :
+  container_name : nginx
+  env_file : .env
