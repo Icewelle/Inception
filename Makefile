@@ -4,7 +4,7 @@ build:
 	docker-compose -f srcs/docker-compose.yml build
 
 up:
-	docker-compose -f srcs/docker-compose.yml up -d -p 443
+	docker compose -f 'srcs/docker-compose.yml' up -d --build 'nginx' 
 
 down:
 	docker-compose -f srcs/docker-compose.yml down
@@ -15,6 +15,3 @@ logs:
 restart:
 	docker-compose -f srcs/docker-compose.yml down
 	docker-compose -f srcs/docker-compose.yml up -d
-
-shell:
-	docker-compose exec <service_name> /bin/sh
