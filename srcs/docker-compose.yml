@@ -1,10 +1,40 @@
-name : ${NAME:?error}
+name: ${NAME:?error}
 
 services:
 
- nginx :
-  container_name : nginx
-  env_file : .env
+ nginx:
+  container_name: nginx
+  env_file: .env
   build: ./requirements/nginx
   ports: 
     - "4443:443"
+  networks:
+    - frontend
+    - backend
+  volumes:
+      - ./test:/var/www/html
+
+ wordpress:
+  container_name: wordpress
+  env_file: .env
+  build: ./requirements/wordpress
+  networks:
+    - backend
+    - db
+  volumes:
+      - ./test:/var/www/html
+
+# mariadb:
+#  container_name: mariadb
+#  env_file: .env
+#  build: ./requirements/mariadb
+#  networks:
+#   - db
+#  volumes:
+#  - /home/cluby/data/mariadb
+
+
+networks:
+ frontend:
+ backend:
+ db:
