@@ -5,24 +5,23 @@ services:
  nginx:
   container_name: nginx
   env_file: .env
-  build: ./requirements/nginx
+  build: requirements/nginx
   ports: 
     - "4443:443"
   networks:
-    - frontend
-    - backend
+    - inception
   volumes:
-      - ./test:/var/www/html
+      - wordpress_files:/var/www/html
+  
 
  wordpress:
   container_name: wordpress
   env_file: .env
-  build: ./requirements/wordpress
+  build: requirements/wordpress
   networks:
-    - backend
-    - db
+    - inception
   volumes:
-      - ./test:/var/www/html
+      - wordpress_files:/var/www/html
 
 # mariadb:
 #  container_name: mariadb
@@ -35,6 +34,13 @@ services:
 
 
 networks:
- frontend:
- backend:
- db:
+ inception:
+  driver: bridge
+
+volumes:
+ wordpress_files:
+  driver: local
+  driver_opts:
+   o: bind
+   type: none
+   device: ./test/wordpress
