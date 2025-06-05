@@ -11,7 +11,9 @@ services:
   networks:
     - inception
   volumes:
-      - wordpress_files:/var/www/html
+    - wordpress_files:/var/www/wordpress
+  depends_on:
+    - wordpress
   
 
  wordpress:
@@ -21,7 +23,7 @@ services:
   networks:
     - inception
   volumes:
-      - wordpress_files:/var/www/html
+      - wordpress_files:/var/www/wordpress
 
 # mariadb:
 #  container_name: mariadb

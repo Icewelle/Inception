@@ -1,7 +1,7 @@
 .PHONY: build up down logs restart shell
 
 build:
-	
+	echo "127.0.0.1 cluby.42.fr" | tee -a /etc/hosts
 	docker-compose -f srcs/docker-compose.yml build
 
 

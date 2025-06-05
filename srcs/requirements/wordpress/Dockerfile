@@ -7,6 +7,7 @@ RUN apk add --no-cache curl \
     && tar -xzf wordpress.tar.gz --strip-components=1 \
     && rm wordpress.tar.gz
 #RUN chown -R www-data:www-data /var/www/wordpress
-RUN chown -R www-data:www-data /var/www/html
+#RUN chown -R www-data:www-data /var/www/html
+RUN chown -R root:root /var/www/*
 EXPOSE 9000
 CMD ["php-fpm"]
