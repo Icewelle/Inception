@@ -11,7 +11,7 @@ services:
   networks:
     - inception
   volumes:
-    - wordpress_files:/var/www/wordpress
+    - wordpress_files:/var/www/html
   depends_on:
     - wordpress
   
@@ -23,7 +23,7 @@ services:
   networks:
     - inception
   volumes:
-      - wordpress_files:/var/www/wordpress
+      - wordpress_files:/var/www/html
 
 # mariadb:
 #  container_name: mariadb
@@ -43,6 +43,6 @@ volumes:
  wordpress_files:
   driver: local
   driver_opts:
-   o: bind
-   type: none
-   device: ./test/wordpress
+    type: none
+    device: ./test/wordpress
+    o: bind
