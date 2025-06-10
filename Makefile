@@ -14,7 +14,7 @@ down:
 logs:
 	docker compose -f srcs/docker-compose.yml logs -f
 
-reup: down build up
+reup: down up
 
 
 restart:
