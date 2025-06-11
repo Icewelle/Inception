@@ -37,8 +37,12 @@ RUN cp wp-config-sample.php wp-config.php
 # Set permissions
 RUN chown -R nobody:nobody /var/www/html
 
+COPY init/init.sh /wp-setup.sh
+RUN chmod +x /wp-setup.sh
+
 # Expose PHP-FPM port
 EXPOSE 9000
 
 # Start PHP-FPM
+ENTRYPOINT ["/wp-setup.sh"]
 CMD ["php-fpm81", "-F"]

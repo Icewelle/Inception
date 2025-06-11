@@ -7,13 +7,13 @@ services:
   env_file: .env
   build: requirements/nginx
   ports: 
-    - "4443:443"
+   - "4443:443"
   networks:
-    - inception
+   - inception
   volumes:
-    - wordpress_files:/var/www/html
+   - wordpress_files:/var/www/html
   depends_on:
-    - wordpress
+   - wordpress
   
 
  wordpress:
@@ -21,22 +21,32 @@ services:
   env_file: .env
   build: requirements/wordpress
   networks:
-    - inception
+   - inception
+   - backend
   volumes:
-      - wordpress_files:/var/www/html
+   - wordpress_files:/var/www/html
+  expose:
+   - 9000  
+   - 3306
+  depends_on:
+   - mariadb
 
-# mariadb:
-#  container_name: mariadb
-#  env_file: .env
-#  build: ./requirements/mariadb
-#  networks:
-#   - db
-#  volumes:
-#  - /home/cluby/data/mariadb
+ mariadb:
+  container_name: mariadb
+  env_file: .env
+  build: requirements/mariadb
+  networks:
+   - backend
+  volumes:
+   - database:/var/lib/mysql
+  expose:
+   - 3306
 
 
 networks:
  inception:
+  driver: bridge
+ backend:
   driver: bridge
 
 volumes:
@@ -45,4 +55,10 @@ volumes:
   driver_opts:
     type: none
     device: ./test/wordpress
+    o: bind
+ database:
+  driver: local
+  driver_opts:
+    type: none
+    device: ./test/database
     o: bind
