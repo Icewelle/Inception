@@ -1,4 +1,4 @@
-FROM alpine:3.21
+FROM alpine:3.19
 
 RUN apk update
 RUN apk add nginx
@@ -9,4 +9,3 @@ COPY conf/nginx.conf /etc/nginx/nginx.conf
 CMD [ "nginx", "-g", "daemon off;" ]
 
 EXPOSE 443
-

@@ -1,29 +1,32 @@
 #!/bin/sh
 set -e
 
-# Check if database is already initialized
-if [ -d "/var/lib/mysql/mysql" ]; then
-    echo "Database already initialized, skipping initialization"
-    exec "$@"
+# Initialize database if not already present
+if [ ! -d "/var/lib/mysql/mysql" ]; then
+    echo "Initializing MariaDB data directory..."
+    mariadb-install-db --user=mysql --datadir=/var/lib/mysql
 fi
 
-# Initialize MariaDB data directory
-mysql_install_db --user=mysql --datadir=/var/lib/mysql
-
 # Start MariaDB in the background
-/usr/bin/mysqld --user=mysql --bootstrap << EOF
-USE mysql;
-FLUSH PRIVILEGES;
-DELETE FROM mysql.user WHERE User='';
-DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');
-DROP DATABASE IF EXISTS test;
-DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';
-CREATE DATABASE IF NOT EXISTS ${MYSQL_DATABASE};
-CREATE USER '${MYSQL_USER}'@'%' IDENTIFIED BY '${MYSQL_PASSWORD}';
-GRANT ALL PRIVILEGES ON ${MYSQL_DATABASE}.* TO '${MYSQL_USER}'@'%';
-ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';
-FLUSH PRIVILEGES;
-EOF
+mysqld --user=mysql --datadir=/var/lib/mysql --skip-networking &
+pid="$!"
 
-echo "MariaDB initialization completed."
-exec "$@"
+# Wait for MariaDB to be ready
+for i in $(seq 1 30); do
+    if mariadb-admin ping --silent; then
+        break
+    fi
+    sleep 1
+done
+
+# Run setup SQL
+echo "CREATE DATABASE IF NOT EXISTS ${MYSQL_DATABASE} ;" | mariadb
+echo "CREATE USER IF NOT EXISTS '${MYSQL_USER}'@'%' IDENTIFIED BY '${MYSQL_PASSWORD}' ;" | mariadb
+echo "GRANT ALL PRIVILEGES ON ${MYSQL_DATABASE}.* TO '${MYSQL_USER}'@'%' ;" | mariadb
+echo "FLUSH PRIVILEGES;" | mariadb
+
+# Shutdown background MariaDB
+mariadb-admin shutdown
+
+# Start MariaDB in foreground
+exec mysqld --user=mysql --datadir=/var/lib/mysql
