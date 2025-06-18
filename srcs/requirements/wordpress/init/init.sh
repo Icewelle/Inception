@@ -21,5 +21,13 @@ sed -i "s/username_here/${MYSQL_USER}/g" /var/www/html/wp-config.php
 sed -i "s/password_here/${MYSQL_PASSWORD}/g" /var/www/html/wp-config.php
 sed -i "s/localhost/${WORDPRESS_DB_HOST}/g" /var/www/html/wp-config.php
 
+# Run auto-configuration script in the background
+if [ -f "/setup.sh" ]; then
+    echo "Found setup.sh, contents:"
+    sh /setup.sh &
+else
+    echo "ERROR: setup.sh not found!"
+    ls -la /
+fi
 # Start PHP-FPM
 exec "$@"

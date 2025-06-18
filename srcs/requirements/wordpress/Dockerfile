@@ -19,6 +19,10 @@ RUN apk update && apk upgrade && apk add --no-cache \
     curl \
     mariadb-client
 
+RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
+    chmod +x wp-cli.phar && \
+    mv wp-cli.phar /usr/local/bin/wp
+
 # Configure PHP-FPM to listen on the network
 RUN sed -i 's/listen = 127.0.0.1:9000/listen = 0.0.0.0:9000/g' /etc/php81/php-fpm.d/www.conf && \
     sed -i 's/;listen.mode = 0660/listen.mode = 0660/g' /etc/php81/php-fpm.d/www.conf
@@ -37,12 +41,14 @@ RUN cp wp-config-sample.php wp-config.php
 # Set permissions
 RUN chown -R nobody:nobody /var/www/html
 
-COPY init/init.sh /wp-setup.sh
-RUN chmod +x /wp-setup.sh
+COPY init/init.sh /wp-init.sh
+COPY init/setup.sh /setup.sh
+RUN chmod +x /wp-init.sh \
+    /setup.sh
 
 # Expose PHP-FPM port
 EXPOSE 9000
 
 # Start PHP-FPM
-ENTRYPOINT ["/wp-setup.sh"]
+ENTRYPOINT ["/wp-init.sh"]
 CMD ["php-fpm81", "-F"]
