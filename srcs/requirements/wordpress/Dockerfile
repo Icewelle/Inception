@@ -16,8 +16,12 @@ RUN apk update && apk upgrade && apk add --no-cache \
     php81-xml \
     php81-zip \
     php81-phar \
+    php81-tokenizer \
     curl \
     mariadb-client
+
+# Symlink php81 to php for WP-CLI compatibility
+RUN ln -s /usr/bin/php81 /usr/bin/php
 
 RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
     chmod +x wp-cli.phar && \
@@ -39,12 +43,10 @@ RUN curl -o wordpress.tar.gz https://wordpress.org/latest.tar.gz && \
 RUN cp wp-config-sample.php wp-config.php
 
 # Set permissions
-RUN chown -R nobody:nobody /var/www/html
+RUN chown -R root:root /var/www/html
 
 COPY init/init.sh /wp-init.sh
-COPY init/setup.sh /setup.sh
-RUN chmod +x /wp-init.sh \
-    /setup.sh
+RUN chmod +x /wp-init.sh
 
 # Expose PHP-FPM port
 EXPOSE 9000
