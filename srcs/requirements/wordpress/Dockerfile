@@ -1,35 +1,35 @@
-FROM alpine:3.19
+FROM alpine:3.21
 
 
 # Install required packages
 RUN apk update && apk upgrade && apk add --no-cache \
-    php81 \
-    php81-fpm \
-    php81-mysqli \
-    php81-json \
-    php81-curl \
-    php81-dom \
-    php81-exif \
-    php81-fileinfo \
-    php81-mbstring \
-    php81-openssl \
-    php81-xml \
-    php81-zip \
-    php81-phar \
-    php81-tokenizer \
+    php83 \
+    php83-fpm \
+    php83-mysqli \
+    php83-json \
+    php83-curl \
+    php83-dom \
+    php83-exif \
+    php83-fileinfo \
+    php83-mbstring \
+    php83-openssl \
+    php83-xml \
+    php83-zip \
+    php83-phar \
+    php83-tokenizer \
     curl \
     mariadb-client
 
-# Symlink php81 to php for WP-CLI compatibility
-RUN ln -s /usr/bin/php81 /usr/bin/php
+# Symlink php83 to php for WP-CLI compatibility
+#RUN ln -s /usr/bin/php83 /usr/bin/php
 
 RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
     chmod +x wp-cli.phar && \
     mv wp-cli.phar /usr/local/bin/wp
 
 # Configure PHP-FPM to listen on the network
-RUN sed -i 's/listen = 127.0.0.1:9000/listen = 0.0.0.0:9000/g' /etc/php81/php-fpm.d/www.conf && \
-    sed -i 's/;listen.mode = 0660/listen.mode = 0660/g' /etc/php81/php-fpm.d/www.conf
+RUN sed -i 's/listen = 127.0.0.1:9000/listen = 0.0.0.0:9000/g' /etc/php83/php-fpm.d/www.conf && \
+    sed -i 's/;listen.mode = 0660/listen.mode = 0660/g' /etc/php83/php-fpm.d/www.conf
 
 # Set working directory for WordPress
 WORKDIR /var/www/html
@@ -53,4 +53,4 @@ EXPOSE 9000
 
 # Start PHP-FPM
 ENTRYPOINT ["/wp-init.sh"]
-CMD ["php-fpm81", "-F"]
+CMD ["php-fpm83", "-F"]
