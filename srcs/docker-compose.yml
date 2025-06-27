@@ -30,6 +30,9 @@ services:
    - 3306
   depends_on:
    - mariadb
+  secrets:
+   - db_credentials
+   - wp_credentials
 
  mariadb:
   container_name: mariadb
@@ -41,6 +44,8 @@ services:
    - database:/var/lib/mysql
   expose:
    - 3306
+  secrets:
+   - db_credentials
 
 
 networks:
@@ -48,6 +53,7 @@ networks:
   driver: bridge
  backend:
   driver: bridge
+
 
 volumes:
  wordpress_files:
@@ -62,3 +68,10 @@ volumes:
     type: none
     device: ./database
     o: bind
+
+
+secrets:
+ db_credentials:
+  file: ../secrets/db_credentials
+ wp_credentials:
+  file: ../secrets/wp_credentials

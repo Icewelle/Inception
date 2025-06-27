@@ -1,6 +1,10 @@
 #!/bin/ash
 set -e
 
+if [ -f /run/secrets/db_credentials ]; then
+    . /run/secrets/db_credentials
+fi
+
 mkdir -p /run/mysqld
 chown mysql:mysql /run/mysqld
 

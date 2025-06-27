@@ -1,9 +1,15 @@
 #!/bin/sh
 set -e
 
+if [ -f /run/secrets/db_credentials ]; then
+    . /run/secrets/db_credentials
+fi
+if [ -f /run/secrets/wp_credentials ]; then
+    . /run/secrets/wp_credentials
+fi
+
 mkdir -p /run/php
 
-# Wait for MariaDB to be ready
 echo "Waiting for MariaDB to be ready..."
 for i in $(seq 1 30); do
     if mysql -h"${WORDPRESS_DB_HOST}" -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -e "SELECT 1" >/dev/null 2>&1; then
@@ -17,7 +23,6 @@ for i in $(seq 1 30); do
     fi
 done
 
-# Configure wp-config.php
 WP_CONFIG_PATH="/var/www/html/wp-config.php"
 if [ -f "$WP_CONFIG_PATH" ]; then
     rm -f /var/www/html/wp-config.php
@@ -32,7 +37,6 @@ wp config create \
     --path="/var/www/html" \
     --allow-root
 
-# Wait for wp core to be ready to install
 if ! wp core is-installed --path="/var/www/html" --allow-root; then
     echo "Installing WordPress..."
     wp core install \
@@ -47,9 +51,8 @@ else
     echo "WordPress already installed."
 fi
 
-# Optional: Install plugins or themes
-# echo "Installing plugins..."
-# wp plugin install jetpack --activate --allow-root --path="/var/www/html"
+if ! wp user get "$WORDPRESS_USER" > /dev/null 2>&1; then
+  wp user create "$WORDPRESS_USER" "$WORDPRESS_USER_EMAIL" --user_pass="$WORDPRESS_USER_PASSWORD" --role=author
+fi
 
-# Start PHP-FPM or provided CMD
 exec "$@"

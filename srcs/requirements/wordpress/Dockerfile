@@ -35,7 +35,7 @@ RUN sed -i 's/listen = 127.0.0.1:9000/listen = 0.0.0.0:9000/g' /etc/php83/php-fp
 WORKDIR /var/www/html
 
 # Download and extract WordPress
-RUN curl -o wordpress.tar.gz https://wordpress.org/latest.tar.gz && \
+RUN curl -o wordpress.tar.gz https://wordpress.org/wordpress-6.7.tar.gz && \
     tar -xzf wordpress.tar.gz --strip-components=1 && \
     rm wordpress.tar.gz
 
