@@ -1,22 +1,20 @@
-.PHONY: build up down logs restart shell
+all: build
 
 build:
-	echo "127.0.0.1 cluby.42.fr" | tee -a /etc/hosts
-	docker compose -f srcs/docker-compose.yml build
+	grep -q "127.0.0.1 cluby.42.fr" /etc/hosts || echo "127.0.0.1 cluby.42.fr" | tee -a /etc/hosts
+	docker compose -f srcs/docker-compose.yml up -d --build
 
-
-up:
-	docker compose -f srcs/docker-compose.yml up -d --build 
-
-down:
+clean:
 	docker compose -f srcs/docker-compose.yml down -v
+
+fclean: clean
+	docker volume prune -a
+	rm -rf ./srcs/wordpress/*
+	rm -rf ./srcs/database/*
+
+re : fclean all
 
 logs:
 	docker compose -f srcs/docker-compose.yml logs -f
 
-reup: down up
-
-
-restart:
-	docker compose -f srcs/docker-compose.yml down
-	docker compose -f srcs/docker-compose.yml up -d
+.PHONY: build clean fclean re logs
