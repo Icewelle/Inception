@@ -11,7 +11,7 @@ chown mysql:mysql /run/mysqld
 # Initialize database if empty
 if [ ! -d "/var/lib/mysql/mysql" ]; then
     echo "Initializing MariaDB data directory..."
-    mysql_install_db --user=mysql --datadir=/var/lib/mysql > /dev/null
+    mariadb-install-db --user=mysql --datadir=/var/lib/mysql > /dev/null
 
     # Start MariaDB without networking
     mysqld --user=mysql --datadir=/var/lib/mysql --skip-networking &
@@ -23,7 +23,7 @@ if [ ! -d "/var/lib/mysql/mysql" ]; then
     done
 
     echo "Setting up root user and database..."
-    mysql -u root <<EOF
+    mariadb -u root <<EOF
 ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';
 CREATE DATABASE IF NOT EXISTS \`${MYSQL_DATABASE}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 CREATE USER IF NOT EXISTS '${MYSQL_USER}'@'%' IDENTIFIED BY '${MYSQL_PASSWORD}';

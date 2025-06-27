@@ -16,4 +16,7 @@ re : fclean all
 logs:
 	docker compose -f srcs/docker-compose.yml logs -f
 
-.PHONY: build clean fclean re logs
+privilege:
+	@docker run --rm -it --privileged -v /home/cluby:/host ubuntu bash
+
+.PHONY: build clean fclean re logs privilege
