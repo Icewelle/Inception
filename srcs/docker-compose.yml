@@ -15,7 +15,6 @@ services:
   depends_on:
    - wordpress
   restart: on-failure
-  
 
  wordpress:
   container_name: wordpress
@@ -45,6 +44,7 @@ services:
    - db_credentials
   restart: on-failure
 
+
 networks:
  inception:
   driver: bridge
@@ -57,13 +57,13 @@ volumes:
   driver: local
   driver_opts:
     type: none
-    device: ./wordpress
+    device: /home/cluby/data/wordpress
     o: bind
  database:
   driver: local
   driver_opts:
     type: none
-    device: ./database
+    device: /home/cluby/data/mariadb
     o: bind
 
 

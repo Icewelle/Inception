@@ -1,4 +1,4 @@
-#!/bin/ash
+#!/bin/sh
 set -e
 
 if [ -f /run/secrets/db_credentials ]; then

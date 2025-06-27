@@ -31,26 +31,15 @@ RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli
 RUN sed -i 's/listen = 127.0.0.1:9000/listen = 0.0.0.0:9000/g' /etc/php83/php-fpm.d/www.conf && \
     sed -i 's/;listen.mode = 0660/listen.mode = 0660/g' /etc/php83/php-fpm.d/www.conf
 
-# Set working directory for WordPress
-WORKDIR /var/www/html
-
-# Download and extract WordPress
-RUN curl -o wordpress.tar.gz https://wordpress.org/wordpress-6.7.tar.gz && \
-    tar -xzf wordpress.tar.gz --strip-components=1 && \
-    rm wordpress.tar.gz
-
 # Create WordPress config from sample
-RUN cp wp-config-sample.php wp-config.php
+#RUN cp wp-config-sample.php wp-config.php
 
 # Set permissions
-RUN chown -R root:root /var/www/html
+#RUN chown -R root:root /var/www/html
 
-COPY init/init.sh /wp-init.sh
-RUN chmod +x /wp-init.sh
-
-# Expose PHP-FPM port
-EXPOSE 9000
+COPY init/init.sh /init.sh
+RUN chmod +x /init.sh
 
 # Start PHP-FPM
-ENTRYPOINT ["/wp-init.sh"]
+ENTRYPOINT ["/init.sh"]
 CMD ["php-fpm83", "-F"]

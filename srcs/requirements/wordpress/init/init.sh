@@ -10,6 +10,13 @@ fi
 
 mkdir -p /run/php
 
+if [ ! -f /var/www/html/wp-load.php ]; then
+    echo "Downloading WordPress core files..."
+    php -d memory_limit=256M /usr/local/bin/wp core download --path=/var/www/html --allow-root
+
+else
+    echo "WordPress core files already present."
+fi
 echo "Waiting for MariaDB to be ready..."
 for i in $(seq 1 30); do
     if mysql -h"${WORDPRESS_DB_HOST}" -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -e "SELECT 1" >/dev/null 2>&1; then
@@ -40,19 +47,19 @@ wp config create \
 if ! wp core is-installed --path="/var/www/html" --allow-root; then
     echo "Installing WordPress..."
     wp core install \
-        --url="${WORDPRESS_URL:-http://localhost}" \
-        --title="${WORDPRESS_TITLE:-WordPress Site}" \
-        --admin_user="${WORDPRESS_ADMIN_USER:-admin}" \
-        --admin_password="${WORDPRESS_ADMIN_PASSWORD:-admin}" \
-        --admin_email="${WORDPRESS_ADMIN_EMAIL:-admin@example.com}" \
+        --url="${WORDPRESS_URL}" \
+        --title="${WORDPRESS_TITLE}" \
+        --admin_user="${WORDPRESS_ADMIN_USER}" \
+        --admin_password="${WORDPRESS_ADMIN_PASSWORD}" \
+        --admin_email="${WORDPRESS_ADMIN_EMAIL}" \
         --path="/var/www/html" \
         --allow-root
 else
     echo "WordPress already installed."
 fi
 
-if ! wp user get "$WORDPRESS_USER" > /dev/null 2>&1; then
-  wp user create "$WORDPRESS_USER" "$WORDPRESS_USER_EMAIL" --user_pass="$WORDPRESS_USER_PASSWORD" --role=author
+if ! wp user get "$WORDPRESS_USER" --path=/var/www/html > /dev/null 2>&1; then
+  wp user create "$WORDPRESS_USER" "$WORDPRESS_USER_EMAIL" --user_pass="$WORDPRESS_USER_PASSWORD" --role=author --path=/var/www/html
 fi
 
 exec "$@"
