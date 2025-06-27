@@ -8,9 +8,8 @@ clean:
 	docker compose -f srcs/docker-compose.yml down -v
 
 fclean: clean
-	docker volume prune -a
-	rm -rf ./srcs/wordpress/*
-	rm -rf ./srcs/database/*
+	docker system prune -af
+	docker volume prune -af
 
 re : fclean all
 
