@@ -8,16 +8,13 @@ fi
 mkdir -p /run/mysqld
 chown mysql:mysql /run/mysqld
 
-# Initialize database if empty
 if [ ! -d "/var/lib/mysql/mysql" ]; then
     echo "Initializing MariaDB data directory..."
     mariadb-install-db --user=mysql --datadir=/var/lib/mysql > /dev/null
 
-    # Start MariaDB without networking
     mysqld --user=mysql --datadir=/var/lib/mysql --skip-networking &
     pid="$!"
 
-    # Wait for MariaDB to be ready
     while ! mysqladmin ping --silent; do
         sleep 1
     done
@@ -31,9 +28,7 @@ GRANT ALL PRIVILEGES ON \`${MYSQL_DATABASE}\`.* TO '${MYSQL_USER}'@'%';
 FLUSH PRIVILEGES;
 EOF
 
-    # Shutdown temporary MariaDB
     mysqladmin shutdown -uroot -p"${MYSQL_ROOT_PASSWORD}"
 fi
 
-# Start MariaDB in the foreground
 exec mysqld --user=mysql --datadir=/var/lib/mysql
