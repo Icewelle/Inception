@@ -63,7 +63,7 @@ volumes:
   driver: local
   driver_opts:
     type: none
-    device: /home/cluby/data/mariadb
+    device: /home/cluby/data/database
     o: bind
 
 
